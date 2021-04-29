@@ -19,24 +19,24 @@ print('''The list for SA added to Role in Vault will be ---> ''' + sa_list_for_v
 
 # Login to Vault thru CLI.
 import os
-os.system('echo "I am linux command"')
-os.system('export VAULT_ADDR=https://enterprisevault.npe.gcp.lowes.com:8200 ; export VAULT_NAMESPACE=ushi; vault login -method=oidc')
-os.system('export VAULT_NAMESPACE=ushi/oms')
+#os.system('echo "I am linux command"')
+os.system('export VAULT_ADDR=https://enterprisevault.npe.gcp.lowes.com:8200 ; export VAULT_NAMESPACE=ushi ; vault login -method=oidc ; export VAULT_NAMESPACE=ushi/oms')
+#os.system('export VAULT_NAMESPACE=ushi/oms')
 
 
 # Write a policy in Vault.
-os.system('''
-vault policy write ' + app_name + '-policy '- << EOF
+os.system("""
+vault policy write """ + app_name + """-policy - << EOF
 #DEV
-path "secrets/data/' + app_name + '-dev*" {
+path "secrets/data/""" + app_name + """-dev*" {
 capabilities = ["create", "update", "read", "list", "delete"]
 }
 #QA
-path "secrets/data' + app_name + '-qa*" {
+path "secrets/data/""" + app_name + """-qa*" {
 capabilities = ["create", "update", "read", "list", "delete"]
 }
 #PERF
-path "secrets/data/' + app_name + '-perf*" {
+path "secrets/data/""" + app_name + """-perf*" {
 capabilities = ["create", "update", "read", "list", "delete"]
 }
 
@@ -45,7 +45,7 @@ path "secrets*" {
 capabilities = ["list"]
 }
 EOF
-''')
+""")
 
 
 # Read a policy from vautl for verification.
@@ -80,24 +80,32 @@ secret_id = ""
 
 if len(secret_id) == 0:
     # Create secret_id
-    os.system('vault write -force auth/approle/role/' + app_name + '-role/secret-id')
-    print("Secret ID is created")
+    #os.system('vault write -force auth/approle/role/' + app_name + '-role/secret-id | grep -i secret_id | head -1 | awk '{print $2}'')
+    
     # Read secret_id created and assign it to variable.
-    secret_id = subprocess.Popen("vault list  auth/approle/role/" + app_name + "-role/role-id/secret-id | tail -1 ", shell=True,stdout=subprocess.PIPE).communicate()[0].decode('utf-8').strip()
+    secret_id = subprocess.Popen("vault write -force  auth/approle/role/" + app_name + "-role/secret-id | grep -i secret_id | head -1 | awk '{print $2}' ", shell=True,stdout=subprocess.PIPE).communicate()[0].decode('utf-8').strip()
+    print("Secret ID is created")
     print("Secret ID assigned to variable secret_id: " + secret_id)
 else:
     print("Secret ID exist")
 
 # Read secret_id created and assign it to variable.
-secret_id = subprocess.Popen("vault list  auth/approle/role/" + app_name + "-role/role-id/secret-id | tail -1 ", shell=True,stdout=subprocess.PIPE).communicate()[0].decode('utf-8').strip()
+#print('Read secret_id created and assign it to variable')
+#secret_id = subprocess.Popen("vault list  auth/approle/role/" + app_name + "-role/secret-id | tail -1 ", shell=True,stdout=subprocess.PIPE).communicate()[0].decode('utf-8').strip()
+#print('Secret ID is created')
 
 # Generate output for user
+print('Generate output for user.')
+
 print('''
 ************************************************************************************************
 Please use bellow commands to access vault:
 
 export VAULT_ADDR=https://enterprisevault.npe.gcp.lowes.com:8200
 export VAULT_NAMESPACE=ushi/oms
-''' + 'vault write auth/approle/login role_id=' + role_id + ' secret_id=' + secret_id + '''
+''' + 'vault write auth/approle/login role_id=' + role_id + ' secret_id=' + secret_id +'''
+
+Open browser with Vault endpoint and token, go to secrets find file with respective to your application name and start writing secrets. 
+Modify manifest and your property file.
 ************************************************************************************************
 ''')
