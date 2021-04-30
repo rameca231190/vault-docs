@@ -7,8 +7,18 @@ print("""
 Code will be run for """ + app_name.upper() + """ applications in """ + app_name.upper() + """ namespace on DTQ environment
 """)
 
+# Diside for which application code needs to be run.
+app_name = input("What is the application code needs to be run for ? ")
+
+sa_list = ["omh", "dfs", "eor", "orbit", "sos", "cfs" "mrv", "ofi", "omniamod", ]
+
+if app_name in sa_list:
+    print('Script will be run now for: ' + app_name.upper() + ' application')
+else:
+    print('This applicaiotn is not in the SA list please enter correct name of applicaiotn ! ! !')
+
 # Open the file which has SA list and read it.
-sa_list = open("sa_list.txt", "r")
+sa_list = open("app-sa/" + app_name + ".txt", "r")
 content = sa_list.read()
 
 # Create variable as of SA to add it to the Vault command.
@@ -98,7 +108,7 @@ else:
 print('Generate output for user.')
 
 print('''
-************************************************************************************************
+***************************************************************************************************************************************
 Please use bellow commands to access vault:
 
 export VAULT_ADDR=https://enterprisevault.npe.gcp.lowes.com:8200
@@ -107,5 +117,5 @@ export VAULT_NAMESPACE=ushi/oms
 
 Open browser with Vault endpoint and token, go to secrets find file with respective to your application name and start writing secrets. 
 Modify manifest and your property file.
-************************************************************************************************
+***************************************************************************************************************************************
 ''')
