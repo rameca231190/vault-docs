@@ -7,9 +7,7 @@ print("""
 Code will be run for """ + app_name.upper() + """ applications in """ + app_name.upper() + """ namespace on DTQ environment
 """)
 
-# Diside for which application code needs to be run.
-app_name = input("What is the application code needs to be run for ? ")
-
+# Iterate thru list of applications. 
 sa_list = ["omh", "dfs", "eor", "orbit", "sos", "cfs" "mrv", "ofi", "omniamod", ]
 
 if app_name in sa_list:
@@ -30,8 +28,8 @@ print('''The list for SA added to Role in Vault will be ---> ''' + sa_list_for_v
 # Login to Vault thru CLI.
 import os
 #os.system('echo "I am linux command"')
-os.system('export VAULT_ADDR=https://enterprisevault.npe.gcp.lowes.com:8200 ; export VAULT_NAMESPACE=ushi ; vault login -method=oidc ; export VAULT_NAMESPACE=ushi/oms')
-#os.system('export VAULT_NAMESPACE=ushi/oms')
+os.system('export VAULT_ADDR=https://enterprisevault.npe.gcp.lowes.com:8200 ; export VAULT_NAMESPACE=ushi ; vault login -method=oidc')
+os.system('export VAULT_NAMESPACE=ushi/oms')
 
 
 # Write a policy in Vault.
