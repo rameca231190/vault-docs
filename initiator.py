@@ -8,12 +8,13 @@ Code will be run for """ + app_name.upper() + """ applications in """ + app_name
 """)
 
 # Iterate thru list of applications. 
-sa_list = ["omh", "dfs", "eor", "orbit", "sos", "cfs" "mrv", "ofi", "omniamod", ]
+sa_list = ["omh", "dfs", "orbit", "sos", "cfs" "mrv", "ofi", "omniamod", ]
 
 if app_name in sa_list:
     print('Script will be run now for: ' + app_name.upper() + ' application')
 else:
     print('This applicaiotn is not in the SA list please enter correct name of applicaiotn ! ! !')
+    exit()
 
 # Open the file which has SA list and read it.
 sa_list = open("app-sa/" + app_name + ".txt", "r")
