@@ -8,7 +8,7 @@ Code will be run for """ + app_name.upper() + """ applications in """ + app_name
 """)
 
 # Iterate thru list of applications. 
-sa_list = ["omh", "dfs", "orbit", "sos", "cfs" "mrv", "ofi", "omniamod", ]
+sa_list = ["<name>", "<name>", "<name>", "<name>", "<name>" "<name>", "<name>", "<name>", ]
 
 if app_name in sa_list:
     print('Script will be run now for: ' + app_name.upper() + ' application')
