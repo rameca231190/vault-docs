@@ -29,7 +29,7 @@ print('''The list for SA added to Role in Vault will be ---> ''' + sa_list_for_v
 # Login to Vault thru CLI.
 import os
 #os.system('echo "I am linux command"')
-os.system('export VAULT_ADDR=https://enterprisevault.npe.gcp.lowes.com:8200 ; export VAULT_NAMESPACE=ushi ; vault login -method=oidc')
+os.system('export VAULT_ADDR=<> ; export VAULT_NAMESPACE=<> ; vault login -method=oidc')
 os.system('export VAULT_NAMESPACE=ushi/oms')
 
 
