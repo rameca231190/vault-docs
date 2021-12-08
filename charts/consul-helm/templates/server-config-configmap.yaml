@@ -1,0 +1,80 @@
+{{- if (or (and (ne (.Values.server.enabled | toString) "-") .Values.server.enabled) (and (eq (.Values.server.enabled | toString) "-") .Values.global.enabled)) }}
+# StatefulSet to run the actual Consul server cluster.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "consul.fullname" . }}-server-config
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ template "consul.name" . }}
+    chart: {{ template "consul.chart" . }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+    component: server
+data:
+  {{- $vaultConnectCAEnabled := and .Values.global.secretsBackend.vault.connectCA.address .Values.global.secretsBackend.vault.connectCA.rootPKIPath .Values.global.secretsBackend.vault.connectCA.intermediatePKIPath -}}
+  {{- if and .Values.global.secretsBackend.vault.enabled $vaultConnectCAEnabled }}
+  {{- with .Values.global.secretsBackend.vault }}
+  connect-ca-config.json: |
+    {
+      "connect": [
+        {
+          "ca_config": [
+            {
+              "address": "{{ .connectCA.address }}",
+              {{- if and .ca.secretName .ca.secretKey }}
+              "ca_file": "/consul/vault-ca/tls.crt",
+              {{- end }}
+              "intermediate_pki_path": "{{ .connectCA.intermediatePKIPath }}",
+              "root_pki_path": "{{ .connectCA.rootPKIPath }}",
+              "auth_method": {
+                "type": "kubernetes",
+                "params": {
+                  "role": "{{ .consulServerRole }}"
+                }
+              }
+            }
+          ],
+          "ca_provider": "vault"
+        }
+      ]
+    }
+  {{- if .connectCA.additionalConfig }}
+  additional-connect-ca-config.json: |
+{{ tpl .connectCA.additionalConfig $ | trimAll "\"" | indent 4 }}
+  {{- end }}
+  {{- end }}
+  {{- end }}
+  extra-from-values.json: |-
+{{ tpl .Values.server.extraConfig . | trimAll "\"" | indent 4 }}
+  {{- if .Values.global.acls.manageSystemACLs }}
+  acl-config.json: |-
+    {
+      "acl": {
+        "enabled": true,
+        "default_policy": "deny",
+        "down_policy": "extend-cache",
+        {{- if (and .Values.global.acls.replicationToken.secretName .Values.global.acls.replicationToken.secretKey) }}
+        "enable_token_replication": true,
+        {{- end }}
+        "enable_token_persistence": true
+      }
+    }
+  {{- end }}
+  {{- if (and .Values.ui.enabled (or (eq "true" (.Values.ui.metrics.enabled | toString) ) (and .Values.global.metrics.enabled (eq "-" (.Values.ui.metrics.enabled | toString))))) }}
+  ui-config.json: |-
+    {
+      "ui_config": {
+        "enabled": true,
+        "metrics_provider": "{{ .Values.ui.metrics.provider }}",
+        "metrics_proxy": {
+          "base_url": "{{ .Values.ui.metrics.baseURL }}"
+        }
+      }
+    }
+  {{- end }}
+  central-config.json: |-
+    {
+      "enable_central_service_config": true
+    }
+{{- end }}
